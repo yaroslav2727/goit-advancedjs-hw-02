@@ -31,17 +31,15 @@ function onSubmit(event) {
   for (let i = 0; i < Number(amount.value); i += 1) {
     const realDelay = Number(step.value) * i + Number(delay.value);
     createPromise(i + 1, realDelay)
-      .then(res => {
+      .then(({ position, delay }) => {
         iziToast.success({
-          message: res,
+          message: `Fulfilled promise ${position} in ${delay}ms`,
         });
-        console.log(`✅ ${res}`);
       })
-      .catch(err => {
+      .catch(({ position, delay }) => {
         iziToast.error({
-          message: err,
+          message: `Rejected promise ${position} in ${delay}ms`,
         });
-        console.log(`❌ ${err}`);
       })
       .finally(() => {
         if (Number(amount.value) - i === 1) {
@@ -60,9 +58,9 @@ function createPromise(position, delay) {
   return new Promise((res, rej) => {
     setTimeout(() => {
       if (shouldResolve) {
-        res(`Fulfilled promise ${position} in ${delay}ms`);
+        res({ position, delay });
       } else {
-        rej(`Rejected promise ${position} in ${delay}ms`);
+        rej({ position, delay });
       }
     }, delay);
   });
